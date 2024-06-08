@@ -40,15 +40,15 @@ jobs:
           cd projects/nodejs-cicd-pipeline/
           npx semantic-release
 
-      - name: Push Docker image
-        run: |
-          # Check if the branch is main and push image if true
-          if [ ${{ github.ref }} != 'refs/heads/main' ]; then
-            echo "Skip push image for ${{ github.ref }}"
-            exit 0
-          else
-            docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKERHUB_TOKEN }}
-            docker tag node-demo:${{ github.sha }} ${{ secrets.DOCKERHUB_USERNAME }}/node-demo:${{ github.sha }}
-            docker images
-            docker push ${{ secrets.DOCKERHUB_USERNAME }}/node-demo:${{ github.sha }}
-          fi
+      # - name: Push Docker image
+      #   run: |
+      #     # Check if the branch is main and push image if true
+      #     if [ ${{ github.ref }} != 'refs/heads/main' ]; then
+      #       echo "Skip push image for ${{ github.ref }}"
+      #       exit 0
+      #     else
+      #       docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKERHUB_TOKEN }}
+      #       docker tag node-demo:${{ github.sha }} ${{ secrets.DOCKERHUB_USERNAME }}/node-demo:${{ github.sha }}
+      #       docker images
+      #       docker push ${{ secrets.DOCKERHUB_USERNAME }}/node-demo:${{ github.sha }}
+      #     fi
