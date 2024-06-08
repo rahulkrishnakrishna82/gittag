@@ -50,7 +50,7 @@ jobs:
         uses: actions/github-script@v6
         with:
           script: |
-            const tag = `v${new Date().toISOString().split('T')[0]}-${process.env.GITHUB_SHA.slice(0, 7)}`;
+            const tag = `v${new Date().toISOString().split('T')[0]}-${context.sha.slice(0, 7)}`;
             const ref = `refs/tags/${tag}`;
             await github.git.createRef({
               owner: context.repo.owner,
@@ -59,3 +59,5 @@ jobs:
               sha: context.sha,
             });
             console.log(`Tag ${tag} created`);
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
