@@ -1,19 +1,9 @@
 name: Node.js CI/CD with Docker
 
 on:
-  pull_request:
-    branches:
-      - main
-    paths:
-      - 'projects/nodejs-cicd-pipeline/**'
-      - '.github/workflows/nodejs-cicd-pipeline.yml'
   push:
     branches:
       - main
-    paths:
-      - 'projects/nodejs-cicd-pipeline/**'
-      - '.github/workflows/nodejs-cicd-pipeline.yml'
-
 jobs:
   nodejs-cicd:
     runs-on: ubuntu-latest
@@ -21,6 +11,16 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+
+      - name: Install dependencies
+        run: |
+          cd projects/nodejs-cicd-pipeline/
+          npm install
 
       - name: Build Docker image
         run: |
@@ -33,6 +33,13 @@ jobs:
           # Run tests here, replace with your actual test commands
           echo "TODO: Run test here"
 
+      - name: Semantic Release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          cd projects/nodejs-cicd-pipeline/
+          npx semantic-release
+
       - name: Push Docker image
         run: |
           # Check if the branch is main and push image if true
@@ -43,5 +50,5 @@ jobs:
             docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKERHUB_TOKEN }}
             docker tag node-demo:${{ github.sha }} ${{ secrets.DOCKERHUB_USERNAME }}/node-demo:${{ github.sha }}
             docker images
-            echo "TODO: Push image here..."
+            docker push ${{ secrets.DOCKERHUB_USERNAME }}/node-demo:${{ github.sha }}
           fi
