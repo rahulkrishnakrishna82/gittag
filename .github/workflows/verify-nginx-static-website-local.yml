@@ -3,6 +3,8 @@ name: Verify nginx-static-website-local
 on:
   push:
     branches: ['main']
+    paths:
+      - 'projects/nginx-static-website-local/**'
 
 jobs:
   build:
@@ -37,27 +39,3 @@ jobs:
             done
           }
           retry curl -X POST https://example.com/deploy
-
-  tag:
-    runs-on: ubuntu-latest
-    needs: build
-    if: always()
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Create Git Tag
-        if: github.ref == 'refs/heads/main' && github.event_name == 'push'
-        uses: actions/github-script@v6
-        with:
-          script: |
-            const tag = `v${new Date().toISOString().split('T')[0]}-${context.sha.slice(0, 7)}`;
-            const ref = `refs/tags/${tag}`;
-            await github.git.createRef({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              ref: ref,
-              sha: context.sha,
-            });
-            console.log(`Tag ${tag} created`);
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
