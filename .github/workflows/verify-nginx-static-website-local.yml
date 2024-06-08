@@ -9,13 +9,31 @@ on:
     branches: ['main']
     paths:
       - 'projects/nginx-static-website-local/**'
+
 jobs:
   build:
     runs-on: ubuntu-latest
+
     steps:
       - uses: actions/checkout@v4
+      
       - name: Build the Docker image
         run: |
           cd projects/nginx-static-website-local
-          chmod +x demo_project.sh; ls -la
+          chmod +x demo_project.sh
           ./demo_project.sh
+
+      - name: Create Git Tag
+        if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const tag = `v${new Date().toISOString().split('T')[0]}-${process.env.GITHUB_SHA.slice(0, 7)}`;
+            const ref = `refs/tags/${tag}`;
+            await github.git.createRef({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              ref: ref,
+              sha: context.sha,
+            });
+            console.log(`Tag ${tag} created`);
