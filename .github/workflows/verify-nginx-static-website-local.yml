@@ -3,12 +3,6 @@ name: Verify nginx-static-website-local
 on:
   push:
     branches: ['main']
-    paths:
-      - 'projects/nginx-static-website-local/**'
-  pull_request:
-    branches: ['main']
-    paths:
-      - 'projects/nginx-static-website-local/**'
 
 jobs:
   build:
